@@ -13,33 +13,37 @@ const app = {
     editingFieldIndex: null,
 };
 
-const elements = {
-    authSection: document.getElementById('authSection'),
-    dashboardSection: document.getElementById('dashboardSection'),
-    builderSection: document.getElementById('builderSection'),
-    formTitle: document.getElementById('formTitle'),
-    formDescription: document.getElementById('formDescription'),
-    formEmail: document.getElementById('formEmail'),
-    fieldLabel: document.getElementById('fieldLabel'),
-    fieldType: document.getElementById('fieldType'),
-    fieldRequired: document.getElementById('fieldRequired'),
-    addFieldBtn: document.getElementById('addFieldBtn'),
-    fieldsList: document.getElementById('fieldsList'),
-    formList: document.getElementById('formList'),
-    builderTitle: document.getElementById('builderTitle'),
-    formSaveBtn: document.getElementById('formSaveBtn'),
-    formCancelBtn: document.getElementById('formCancelBtn'),
-    successMessage: document.getElementById('successMessage'),
-    errorMessage: document.getElementById('errorMessage'),
-    currentUserLabel: document.getElementById('currentUserLabel'),
-    authTabs: document.querySelectorAll('[data-auth-tab]'),
-    loginForm: document.getElementById('loginForm'),
-    signupForm: document.getElementById('signupForm'),
-    formEditor: document.getElementById('formEditor'),
-    previewTitle: document.getElementById('previewTitle'),
-    previewDescription: document.getElementById('previewDescription'),
-    previewFields: document.getElementById('previewFields'),
-};
+let elements = {};
+
+function initElements() {
+    elements = {
+        authSection: document.getElementById('authSection'),
+        dashboardSection: document.getElementById('dashboardSection'),
+        builderSection: document.getElementById('builderSection'),
+        formTitle: document.getElementById('formTitle'),
+        formDescription: document.getElementById('formDescription'),
+        formEmail: document.getElementById('formEmail'),
+        fieldLabel: document.getElementById('fieldLabel'),
+        fieldType: document.getElementById('fieldType'),
+        fieldRequired: document.getElementById('fieldRequired'),
+        addFieldBtn: document.getElementById('addFieldBtn'),
+        fieldsList: document.getElementById('fieldsList'),
+        formList: document.getElementById('formList'),
+        builderTitle: document.getElementById('builderTitle'),
+        formSaveBtn: document.getElementById('formSaveBtn'),
+        formCancelBtn: document.getElementById('formCancelBtn'),
+        successMessage: document.getElementById('successMessage'),
+        errorMessage: document.getElementById('errorMessage'),
+        currentUserLabel: document.getElementById('currentUserLabel'),
+        authTabs: document.querySelectorAll('[data-auth-tab]'),
+        loginForm: document.getElementById('loginForm'),
+        signupForm: document.getElementById('signupForm'),
+        formEditor: document.getElementById('formEditor'),
+        previewTitle: document.getElementById('previewTitle'),
+        previewDescription: document.getElementById('previewDescription'),
+        previewFields: document.getElementById('previewFields'),
+    };
+}
 
 function loadFromStorage(key, fallback) {
     try {
@@ -55,18 +59,22 @@ function saveToStorage(key, value) {
 }
 
 function clearMessages() {
-    elements.successMessage.classList.remove('active');
-    elements.errorMessage.classList.remove('active');
-    elements.successMessage.textContent = '';
-    elements.errorMessage.textContent = '';
+    if (elements.successMessage) {
+        elements.successMessage.classList.remove('active');
+        elements.successMessage.textContent = '';
+    }
+    if (elements.errorMessage) {
+        elements.errorMessage.classList.remove('active');
+        elements.errorMessage.textContent = '';
+    }
 }
 
 function showMessage(type, text) {
     clearMessages();
-    if (type === 'success') {
+    if (type === 'success' && elements.successMessage) {
         elements.successMessage.classList.add('active');
         elements.successMessage.textContent = text;
-    } else if (type === 'error') {
+    } else if (type === 'error' && elements.errorMessage) {
         elements.errorMessage.classList.add('active');
         elements.errorMessage.textContent = text;
     }
@@ -109,10 +117,18 @@ function syncState() {
 
 function renderView() {
     const signedIn = !!app.currentUser;
-    elements.authSection.classList.toggle('hidden', signedIn);
-    elements.dashboardSection.classList.toggle('hidden', !signedIn);
-    elements.builderSection.classList.add('hidden');
-    elements.currentUserLabel.textContent = app.currentUser ? app.currentUser.username : '';
+    if (elements.authSection) {
+        elements.authSection.classList.toggle('hidden', signedIn);
+    }
+    if (elements.dashboardSection) {
+        elements.dashboardSection.classList.toggle('hidden', !signedIn);
+    }
+    if (elements.builderSection) {
+        elements.builderSection.classList.add('hidden');
+    }
+    if (elements.currentUserLabel) {
+        elements.currentUserLabel.textContent = app.currentUser ? app.currentUser.username : '';
+    }
     if (signedIn) {
         renderFormList();
     }
@@ -144,6 +160,7 @@ function escapeHtml(text) {
 
 function renderFormList() {
     const forms = app.forms || [];
+    if (!elements.formList) return;
     elements.formList.innerHTML = '';
     if (forms.length === 0) {
         elements.formList.innerHTML = '<div class="form-card"><strong>No forms yet.</strong><p class="form-meta">Create a new form to start collecting responses. You will receive emails when your form is submitted.</p></div>';
@@ -183,12 +200,17 @@ async function loadForms() {
 }
 
 function renderFieldsEditor(fields = []) {
+    if (!elements.fieldsList || !elements.previewFields) return;
     elements.fieldsList.innerHTML = '';
     if (fields.length === 0) {
         elements.fieldsList.innerHTML = '<p style="color: #64748b;">No fields yet. Add fields to your form and preview the layout.</p>';
         elements.previewFields.innerHTML = '<p style="color: #64748b;">Add fields to see the preview.</p>';
-        elements.previewTitle.textContent = elements.formTitle.value || 'Untitled form';
-        elements.previewDescription.textContent = elements.formDescription.value || 'Form description goes here.';
+        if (elements.previewTitle) {
+            elements.previewTitle.textContent = elements.formTitle.value || 'Untitled form';
+        }
+        if (elements.previewDescription) {
+            elements.previewDescription.textContent = elements.formDescription.value || 'Form description goes here.';
+        }
         return;
     }
     fields.forEach((field, index) => {
@@ -210,8 +232,13 @@ function renderFieldsEditor(fields = []) {
 }
 
 function renderFormPreview(fields) {
-    elements.previewTitle.textContent = elements.formTitle.value || 'Untitled form';
-    elements.previewDescription.textContent = elements.formDescription.value || 'Form description goes here.';
+    if (!elements.previewFields) return;
+    if (elements.previewTitle) {
+        elements.previewTitle.textContent = elements.formTitle.value || 'Untitled form';
+    }
+    if (elements.previewDescription) {
+        elements.previewDescription.textContent = elements.formDescription.value || 'Form description goes here.';
+    }
     elements.previewFields.innerHTML = '';
     fields.forEach((field) => {
         const fieldWrap = document.createElement('div');
@@ -241,6 +268,7 @@ function updatePreview() {
 }
 
 function addField() {
+    if (!elements.fieldLabel || !elements.fieldType || !elements.fieldRequired) return;
     const label = elements.fieldLabel.value.trim();
     const type = elements.fieldType.value;
     const required = elements.fieldRequired.checked;
@@ -258,7 +286,7 @@ function addField() {
 
 function openFieldEditor(index) {
     const field = app.tempFields[index];
-    if (!field) return;
+    if (!field || !elements.fieldLabel || !elements.fieldType || !elements.fieldRequired || !elements.addFieldBtn) return;
     elements.fieldLabel.value = field.label;
     elements.fieldType.value = field.type;
     elements.fieldRequired.checked = field.required;
@@ -286,6 +314,7 @@ function handleFieldAction(event) {
 async function saveBuilderForm(event) {
     event.preventDefault();
     clearMessages();
+    if (!elements.formTitle || !elements.formDescription || !elements.formEmail) return;
     const titleValue = elements.formTitle.value.trim();
     const descriptionValue = elements.formDescription.value.trim();
     const emailValue = elements.formEmail.value.trim();
@@ -328,8 +357,12 @@ async function saveBuilderForm(event) {
         app.activeFormId = savedForm.id;
         app.isEditing = false;
         initializeBuilderState();
-        elements.builderSection.classList.add('hidden');
-        elements.dashboardSection.classList.remove('hidden');
+        if (elements.builderSection) {
+            elements.builderSection.classList.add('hidden');
+        }
+        if (elements.dashboardSection) {
+            elements.dashboardSection.classList.remove('hidden');
+        }
         await loadForms();
     } catch (error) {
         showMessage('error', error.message);
@@ -338,8 +371,12 @@ async function saveBuilderForm(event) {
 
 function cancelBuilder() {
     initializeBuilderState();
-    elements.builderSection.classList.add('hidden');
-    elements.dashboardSection.classList.remove('hidden');
+    if (elements.builderSection) {
+        elements.builderSection.classList.add('hidden');
+    }
+    if (elements.dashboardSection) {
+        elements.dashboardSection.classList.remove('hidden');
+    }
     clearMessages();
 }
 
@@ -408,11 +445,21 @@ function populateBuilder(form) {
     app.isEditing = true;
     app.tempFields = form.fields.map((field) => ({ ...field }));
     app.editingFieldIndex = null;
-    elements.addFieldBtn.textContent = 'Add field';
-    elements.builderTitle.textContent = 'Edit form';
-    elements.formTitle.value = form.title;
-    elements.formDescription.value = form.description;
-    elements.formEmail.value = form.email;
+    if (elements.addFieldBtn) {
+        elements.addFieldBtn.textContent = 'Add field';
+    }
+    if (elements.builderTitle) {
+        elements.builderTitle.textContent = 'Edit form';
+    }
+    if (elements.formTitle) {
+        elements.formTitle.value = form.title;
+    }
+    if (elements.formDescription) {
+        elements.formDescription.value = form.description;
+    }
+    if (elements.formEmail) {
+        elements.formEmail.value = form.email;
+    }
     renderFieldsEditor(app.tempFields);
 }
 
@@ -421,14 +468,30 @@ function resetBuilder() {
     app.isEditing = false;
     app.tempFields = [];
     app.editingFieldIndex = null;
-    elements.formTitle.value = '';
-    elements.formDescription.value = '';
-    elements.formEmail.value = '';
-    elements.fieldLabel.value = '';
-    elements.fieldType.value = 'text';
-    elements.fieldRequired.checked = false;
-    elements.addFieldBtn.textContent = 'Add field';
-    elements.builderTitle.textContent = 'Create a new form';
+    if (elements.formTitle) {
+        elements.formTitle.value = '';
+    }
+    if (elements.formDescription) {
+        elements.formDescription.value = '';
+    }
+    if (elements.formEmail) {
+        elements.formEmail.value = '';
+    }
+    if (elements.fieldLabel) {
+        elements.fieldLabel.value = '';
+    }
+    if (elements.fieldType) {
+        elements.fieldType.value = 'text';
+    }
+    if (elements.fieldRequired) {
+        elements.fieldRequired.checked = false;
+    }
+    if (elements.addFieldBtn) {
+        elements.addFieldBtn.textContent = 'Add field';
+    }
+    if (elements.builderTitle) {
+        elements.builderTitle.textContent = 'Create a new form';
+    }
     renderFieldsEditor([]);
 }
 
@@ -441,8 +504,12 @@ function openBuilder(formId) {
     const form = app.forms.find((item) => item.id === formId);
     if (!form) return;
     populateBuilder(form);
-    elements.builderSection.classList.remove('hidden');
-    elements.dashboardSection.classList.add('hidden');
+    if (elements.builderSection) {
+        elements.builderSection.classList.remove('hidden');
+    }
+    if (elements.dashboardSection) {
+        elements.dashboardSection.classList.add('hidden');
+    }
 }
 
 async function deleteForm(formId) {
@@ -486,7 +553,7 @@ function handleFormListClick(event) {
 
 function handleFieldFormSubmit(event) {
     event.preventDefault();
-    if (elements.addFieldBtn.textContent === 'Update field') {
+    if (elements.addFieldBtn && elements.addFieldBtn.textContent === 'Update field') {
         const index = app.editingFieldIndex;
         if (index == null) return;
         const label = elements.fieldLabel.value.trim();
@@ -511,27 +578,58 @@ function handleFieldFormSubmit(event) {
 
 function addEventListeners() {
     elements.authTabs.forEach((tab) => tab.addEventListener('click', switchAuthTab));
-    elements.loginForm.addEventListener('submit', loginUser);
-    elements.signupForm.addEventListener('submit', registerUser);
-    elements.formEditor.addEventListener('submit', (event) => event.preventDefault());
-    elements.logoutBtn.addEventListener('click', logoutUser);
-    elements.newFormBtn.addEventListener('click', () => {
-        initializeBuilderState();
-        elements.dashboardSection.classList.add('hidden');
-        elements.builderSection.classList.remove('hidden');
-        clearMessages();
-    });
-    elements.formSaveBtn.addEventListener('click', saveBuilderForm);
-    elements.formCancelBtn.addEventListener('click', cancelBuilder);
-    elements.addFieldBtn.addEventListener('click', handleFieldFormSubmit);
-    elements.fieldsList.addEventListener('click', handleFieldAction);
-    elements.formTitle.addEventListener('input', updatePreview);
-    elements.formDescription.addEventListener('input', updatePreview);
-    elements.formEmail.addEventListener('input', updatePreview);
-    elements.formList.addEventListener('click', handleFormListClick);
+    if (elements.loginForm) {
+        elements.loginForm.addEventListener('submit', loginUser);
+    }
+    if (elements.signupForm) {
+        elements.signupForm.addEventListener('submit', registerUser);
+    }
+    if (elements.formEditor) {
+        elements.formEditor.addEventListener('submit', (event) => event.preventDefault());
+    }
+    if (elements.logoutBtn) {
+        elements.logoutBtn.addEventListener('click', logoutUser);
+    }
+    if (elements.newFormBtn) {
+        elements.newFormBtn.addEventListener('click', () => {
+            initializeBuilderState();
+            if (elements.dashboardSection) {
+                elements.dashboardSection.classList.add('hidden');
+            }
+            if (elements.builderSection) {
+                elements.builderSection.classList.remove('hidden');
+            }
+            clearMessages();
+        });
+    }
+    if (elements.formSaveBtn) {
+        elements.formSaveBtn.addEventListener('click', saveBuilderForm);
+    }
+    if (elements.formCancelBtn) {
+        elements.formCancelBtn.addEventListener('click', cancelBuilder);
+    }
+    if (elements.addFieldBtn) {
+        elements.addFieldBtn.addEventListener('click', handleFieldFormSubmit);
+    }
+    if (elements.fieldsList) {
+        elements.fieldsList.addEventListener('click', handleFieldAction);
+    }
+    if (elements.formTitle) {
+        elements.formTitle.addEventListener('input', updatePreview);
+    }
+    if (elements.formDescription) {
+        elements.formDescription.addEventListener('input', updatePreview);
+    }
+    if (elements.formEmail) {
+        elements.formEmail.addEventListener('input', updatePreview);
+    }
+    if (elements.formList) {
+        elements.formList.addEventListener('click', handleFormListClick);
+    }
 }
 
 async function init() {
+    initElements();
     syncState();
     addEventListeners();
     initializeBuilderState();
