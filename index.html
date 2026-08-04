@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK Form Builder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div class="brand">
+        <div class="brand__logo">PK</div>
+        <div>
+            <h1 class="brand__title">PK Form Builder</h1>
+            <p class="brand__subtitle">Create a form, assign an email address, and share the generated link. Responses are delivered to the configured email.</p>
+        </div>
+    </div>
+
+    <div id="messageContainer">
+        <div id="successMessage" class="message-bar success"></div>
+        <div id="errorMessage" class="message-bar error"></div>
+    </div>
+
+    <section id="authSection">
+        <div class="card">
+            <div class="section-header">
+                <div>
+                    <h2>Sign in or create an account</h2>
+                    <p>Manage your forms and receive submission emails sent to your chosen address.</p>
+                </div>
+            </div>
+            <div class="button-row">
+                <button type="button" class="secondary active" data-auth-tab="login">Sign in</button>
+                <button type="button" class="secondary" data-auth-tab="signup">Create account</button>
+            </div>
+            <div id="login" data-auth-section="login" class="active">
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="loginUsername">Username</label>
+                        <input id="loginUsername" type="text" placeholder="Enter username" autocomplete="username">
+                    </div>
+                    <div class="input-group">
+                        <label for="loginPassword">Password</label>
+                        <input id="loginPassword" type="password" placeholder="Enter password" autocomplete="current-password">
+                    </div>
+                    <div class="button-row">
+                        <button type="submit" class="primary">Sign in</button>
+                    </div>
+                </form>
+            </div>
+            <div id="signup" data-auth-section="signup" class="hidden">
+                <form id="signupForm">
+                    <div class="grid grid-2">
+                        <div class="input-group">
+                            <label for="signupName">Name</label>
+                            <input id="signupName" type="text" placeholder="Your full name" autocomplete="name">
+                        </div>
+                        <div class="input-group">
+                            <label for="signupUsername">Username</label>
+                            <input id="signupUsername" type="text" placeholder="Choose a username" autocomplete="username">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="signupPassword">Password</label>
+                        <input id="signupPassword" type="password" placeholder="Create a password" autocomplete="new-password">
+                    </div>
+                    <div class="button-row">
+                        <button type="submit" class="primary">Create account</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section id="dashboardSection" class="hidden">
+        <div class="top-bar">
+            <div>
+                <p style="margin:0; color:#64748b">Signed in as <strong id="currentUserLabel"></strong></p>
+                <h2>My forms</h2>
+            </div>
+            <div class="button-row">
+                <button id="newFormBtn" class="primary">Create new form</button>
+                <button id="logoutBtn" class="secondary">Sign out</button>
+            </div>
+        </div>
+        <div id="formList"></div>
+    </section>
+
+    <section id="builderSection" class="hidden card">
+        <div class="section-header">
+            <div>
+                <h2 id="builderTitle">Create a new form</h2>
+                <p>Choose a title, notification email, and add fields for your shared form.</p>
+            </div>
+        </div>
+        <div class="grid grid-2">
+            <div>
+                <div class="card" style="padding: 20px;">
+                    <form id="formEditor">
+                        <div class="input-group">
+                            <label for="formTitle">Form title</label>
+                            <input id="formTitle" type="text" placeholder="e.g. Contact request">
+                        </div>
+                        <div class="input-group">
+                            <label for="formDescription">Description</label>
+                            <textarea id="formDescription" placeholder="Briefly describe the purpose of this form"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="formEmail">Notification email</label>
+                            <input id="formEmail" type="email" placeholder="you@example.com">
+                        </div>
+                        <div class="section-header" style="margin-top: 20px;">
+                            <div>
+                                <h2>Add fields</h2>
+                                <p>Choose the type of field and add it to your form layout.</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-2">
+                            <div class="input-group">
+                                <label for="fieldLabel">Field label</label>
+                                <input id="fieldLabel" type="text" placeholder="Example: Email">
+                            </div>
+                            <div class="input-group">
+                                <label for="fieldType">Field type</label>
+                                <select id="fieldType">
+                                    <option value="text">Text</option>
+                                    <option value="email">Email</option>
+                                    <option value="number">Number</option>
+                                    <option value="textarea">Textarea</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>
+                                <input id="fieldRequired" type="checkbox">
+                                Required field
+                            </label>
+                        </div>
+                        <div class="button-row">
+                            <button id="addFieldBtn" type="button" class="primary">Add field</button>
+                            <button id="formCancelBtn" type="button" class="secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div>
+                <div class="card" style="padding: 20px;">
+                    <h3>Form preview</h3>
+                    <div class="form-preview">
+                        <h3 id="previewTitle">Untitled form</h3>
+                        <p id="previewDescription">Form description goes here.</p>
+                        <div id="previewFields"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header" style="margin-top: 22px;">
+            <div>
+                <h2>Your form fields</h2>
+                <p>Review your fields and update them before saving.</p>
+            </div>
+        </div>
+        <div id="fieldsList"></div>
+        <div class="button-row" style="margin-top: 18px;">
+            <button id="formSaveBtn" class="primary">Save form</button>
+        </div>
+    </section>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

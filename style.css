@@ -1,0 +1,253 @@
+/* Shared styles for the form builder site */
+:root {
+    color-scheme: light;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background-color: #f4f7fb;
+    color: #0f172a;
+}
+* {
+    box-sizing: border-box;
+}
+html, body {
+    margin: 0;
+    min-height: 100%;
+}
+body {
+    background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+}
+button, input, select, textarea {
+    font: inherit;
+}
+button {
+    border: none;
+    border-radius: 999px;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+button:hover {
+    background: #1d4ed8;
+}
+.container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 24px;
+}
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 26px;
+}
+.brand__logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    background: #2563eb;
+    color: white;
+    font-weight: 800;
+}
+.brand__title {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: -.02em;
+}
+.brand__subtitle {
+    margin: 6px 0 0;
+    color: #475569;
+    max-width: 560px;
+}
+.card {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+    padding: 28px;
+    margin-bottom: 22px;
+}
+.input-group {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+label {
+    font-weight: 700;
+    color: #334155;
+}
+input[type="text"], input[type="password"], input[type="email"], select, textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #0f172a;
+}
+textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+button.primary {
+    min-height: 48px;
+    padding: 0 20px;
+    font-weight: 700;
+}
+button.secondary {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+button.secondary:hover {
+    background: #cbd5e1;
+}
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+}
+.hidden {
+    display: none !important;
+}
+.message-bar {
+    margin-bottom: 16px;
+    padding: 14px 18px;
+    border-radius: 16px;
+    border: 1px solid transparent;
+    display: none;
+}
+.message-bar.active {
+    display: block;
+}
+.message-bar.success {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+    color: #065f46;
+}
+.message-bar.error {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+}
+.grid {
+    display: grid;
+    gap: 18px;
+}
+.grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+.section-header h2 {
+    margin: 0;
+    font-size: 22px;
+}
+.section-header p {
+    margin: 0;
+    color: #64748b;
+}
+.form-card {
+    background: #f8fafc;
+    padding: 18px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+}
+.form-card strong {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+.form-card .form-meta {
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.6;
+}
+.chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.12);
+    color: #1d4ed8;
+    margin-right: 8px;
+    margin-top: 8px;
+}
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+.form-field-row {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1.6fr 1fr;
+}
+.field-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+.small-button {
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-weight: 700;
+}
+.small-button.danger {
+    background: #ef4444;
+}
+.small-button.danger:hover {
+    background: #dc2626;
+}
+.link-button {
+    background: transparent;
+    color: #0f172a;
+    box-shadow: inset 0 0 0 1px #cbd5e1;
+}
+.link-button:hover {
+    background: #e2e8f0;
+}
+.form-preview {
+    margin-top: 18px;
+    border: 1px solid #cbd5e1;
+    border-radius: 20px;
+    padding: 18px;
+    background: white;
+}
+.preview-field {
+    margin-bottom: 14px;
+}
+.preview-field label {
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: block;
+}
+.preview-field input,
+.preview-field textarea,
+.preview-field select {
+    width: 100%;
+}
+.full-width {
+    width: 100%;
+}
+.top-bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+@media (max-width: 800px) {
+    .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+    }
+}

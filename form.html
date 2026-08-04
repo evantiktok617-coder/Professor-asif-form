@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK Form Preview</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div class="brand">
+        <div class="brand__logo">PK</div>
+        <div>
+            <h1 class="brand__title">Form Preview</h1>
+            <p class="brand__subtitle">Fill out this form and send the response to the form owner by email.</p>
+        </div>
+    </div>
+
+    <div id="message" class="message-bar"></div>
+    <div id="formWrapper" class="card hidden">
+        <div class="top-bar">
+            <div>
+                <h2 id="publishedTitle"></h2>
+                <p id="publishedDescription"></p>
+                <p id="publishedEmail" style="margin:8px 0 0; color:#64748b;"></p>
+            </div>
+            <div>
+                <button id="backButton" class="secondary">Back to builder</button>
+            </div>
+        </div>
+        <form id="publishedForm"></form>
+    </div>
+
+    <div id="noForm" class="card hidden">
+        <h2>Form not found</h2>
+        <p class="form-meta">The form ID from the link is invalid or the form has not been published yet. Please return to the builder and create a form first.</p>
+    </div>
+</div>
+<script>
+    const query = new URLSearchParams(window.location.search);
+    const formId = query.get('formId');
+    const messageBar = document.getElementById('message');
+    const formWrapper = document.getElementById('formWrapper');
+    const noForm = document.getElementById('noForm');
+    const publishedTitle = document.getElementById('publishedTitle');
+    const publishedDescription = document.getElementById('publishedDescription');
+    const publishedEmail = document.getElementById('publishedEmail');
+    const publishedForm = document.getElementById('publishedForm');
+    const backButton = document.getElementById('backButton');
+
+    function showMessage(type, text) {
+        messageBar.className = 'message-bar active ' + type;
+        messageBar.textContent = text;
+    }
+
+    async function fetchJson(url, options = {}) {
+        const response = await fetch(url, options);
+        const result = await response.json();
+        if (!response.ok) {
+            const error = result?.error || 'Server error';
+            throw new Error(error);
+        }
+        return result;
+    }
+
+    function buildForm(form) {
+        publishedTitle.textContent = form.title;
+        publishedDescription.textContent = form.description || 'Fill out the fields and submit the form.';
+        publishedEmail.textContent = `Responses will be sent to: ${form.email}`;
+        publishedForm.innerHTML = '';
+        form.fields.forEach((field) => {
+            const fieldWrap = document.createElement('div');
+            fieldWrap.className = 'input-group';
+            const label = document.createElement('label');
+            label.textContent = field.label + (field.required ? ' *' : '');
+            fieldWrap.appendChild(label);
+            let input;
+            if (field.type === 'textarea') {
+                input = document.createElement('textarea');
+                input.rows = 5;
+            } else {
+                input = document.createElement('input');
+                input.type = field.type;
+            }
+            input.name = field.id;
+            input.placeholder = field.label;
+            if (field.required) {
+                input.required = true;
+            }
+            fieldWrap.appendChild(input);
+            publishedForm.appendChild(fieldWrap);
+        });
+        const submitWrap = document.createElement('div');
+        submitWrap.className = 'button-row';
+        const submitButton = document.createElement('button');
+        submitButton.type = 'submit';
+        submitButton.className = 'primary';
+        submitButton.textContent = 'Submit response';
+        submitWrap.appendChild(submitButton);
+        publishedForm.appendChild(submitWrap);
+        publishedForm.addEventListener('submit', handleSubmit);
+    }
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+        const formData = new FormData(publishedForm);
+        const values = {};
+        formData.forEach((value, key) => {
+            values[key] = value;
+        });
+        try {
+            const result = await fetchJson(`/api/forms/${encodeURIComponent(formId)}/submit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ values }),
+            });
+            showMessage('success', 'Response submitted successfully.');
+            if (result.previewUrl) {
+                showMessage('success', `Response submitted. Email preview: ${result.previewUrl}`);
+            }
+            publishedForm.reset();
+        } catch (error) {
+            showMessage('error', error.message);
+        }
+    }
+
+    async function init() {
+        if (!formId) {
+            noForm.classList.remove('hidden');
+            return;
+        }
+        try {
+            const form = await fetchJson(`/api/forms/${encodeURIComponent(formId)}`);
+            formWrapper.classList.remove('hidden');
+            noForm.classList.add('hidden');
+            buildForm(form);
+        } catch (error) {
+            noForm.classList.remove('hidden');
+            formWrapper.classList.add('hidden');
+        }
+    }
+
+    backButton.addEventListener('click', () => {
+        window.location.href = 'index.html';
+    });
+
+    init();
+</script>
+</body>
+</html>
